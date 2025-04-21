@@ -1,285 +1,258 @@
-]<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chicken Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Receive Chicken Delivery</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #eef3fb;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7f9;
       padding: 2rem;
     }
-    .main-wrapper {
-      display: flex;
-      width: 100%;
-      max-width: 1200px;
-      gap: 2rem;
-    }
-    .display-board {
-      width: 250px;
-      background: #ffffff;
-      border-radius: 1rem;
-      padding: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      height: 400px;
-      overflow-y: auto;
-    }
-    .display-board h3 {
-      margin-bottom: 1rem;
+
+    h1 {
       text-align: center;
+      color: #333;
     }
-    .display-board ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    .display-board li {
-      background-color: #f0f4ff;
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-      border-radius: 0.5rem;
-    }
-    .container {
+
+    .form-container {
       display: flex;
-      gap: 2rem;
-      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
     }
-    .card {
+
+    .form-card {
       background: white;
-      border-radius: 1rem;
       padding: 1.5rem;
+      border-radius: 1rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 220px;
+      flex: 1 1 280px;
+      min-width: 280px;
     }
-    .card h3 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    label {
+
+    .form-card label {
       display: block;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
       font-weight: bold;
     }
-    select, input {
+
+    .form-card input,
+    .form-card select {
       width: 100%;
-      padding: 0.4rem;
-      margin-top: 0.25rem;
-      margin-bottom: 0.5rem;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+    }
+
+    .submit-btn {
+      margin-top: 1.5rem;
+      padding: 0.8rem 2rem;
+      background-color: #4caf50;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .submit-btn:hover {
+      background-color: #388e3c;
+    }
+
+    .filter-container {
+      margin-top: 2rem;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .filter-container label {
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    .filter-container input,
+    .filter-container select {
+      padding: 0.5rem;
+      margin: 0.5rem 1rem 0.5rem 0;
       border-radius: 0.5rem;
       border: 1px solid #ccc;
     }
-    button {
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #6c63ff;
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #5951db;
-    }
+
     table {
-      width: 90%;
+      width: 100%;
       border-collapse: collapse;
       margin-top: 2rem;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
+
     th, td {
-      border: 1px solid #999;
-      padding: 0.5rem;
+      border: 1px solid #ddd;
+      padding: 0.8rem;
       text-align: center;
     }
+
     th {
-      background-color: #d0d8f1;
+      background-color: #f0f0f0;
     }
-    #searchContainer {
-      margin-bottom: 1rem;
-      width: 90%;
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    #searchInput, #categoryFilter {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: 1px solid #aaa;
+
+    @media (max-width: 768px) {
+      .form-container {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="main-wrapper">
-    <div class="display-board">
-      <h3>Latest Updates</h3>
-      <ul id="displayBoardList"></ul>
+
+  <h1>Receive Chicken Delivery</h1>
+
+  <div class="form-container">
+    <div class="form-card">
+      <label for="supplier">Supplier Name:</label>
+      <input type="text" id="supplier" required>
+
+      <label for="date">Date Received:</label>
+      <input type="date" id="date" readonly>
+
+      <label for="contact">Contact Info:</label>
+      <input type="tel" id="contact" required>
     </div>
 
-    <div class="container">
-      <div class="card" id="populationCard">
-        <h3>Population</h3>
-        <label>Native</label>
-        <input type="text" id="populationNative" placeholder="Enter native count" disabled>
-        <label>Broiler</label>
-        <input type="text" id="populationBroiler" placeholder="Enter broiler count" disabled>
-        <label>Counted By</label>
-        <select id="populationBy" disabled>
-          <option value="John">John</option>
-          <option value="Alice">Alice</option>
-          <option value="Bob">Bob</option>
-        </select>
-        <button onclick="toggleEdit('population')" id="populationBtn">Update</button>
-      </div>
+    <div class="form-card">
+      <label for="numChickens">Number of Chickens:</label>
+      <input type="number" id="numChickens" min="1" required>
 
-      <div class="card" id="feedsCard">
-        <h3>Feeds</h3>
-        <label>Feeds 1</label>
-        <input type="text" id="feeds1" placeholder="Enter feed 1 count" disabled>
-        <label>Feeds 2</label>
-        <input type="text" id="feeds2" placeholder="Enter feed 2 count" disabled>
-        <label>Counted By</label>
-        <select id="feedsBy" disabled>
-          <option value="John">John</option>
-          <option value="Alice">Alice</option>
-          <option value="Bob">Bob</option>
-        </select>
-        <button onclick="toggleEdit('feeds')" id="feedsBtn">Update</button>
-      </div>
+      <label for="chickenAge">Chicken Age (in days):</label>
+      <input type="number" id="chickenAge" min="1" required>
 
-      <div class="card" id="eggsChicksCard">
-        <h3>Eggs and Chicks</h3>
-        <label>Native Eggs</label>
-        <input type="text" id="nativeEggs" placeholder="Enter native egg count" disabled>
-        <label>Broiler Chicks</label>
-        <input type="text" id="broilerChicks" placeholder="Enter broiler chick count" disabled>
-        <label>Counted By</label>
-        <select id="eggsChicksBy" disabled>
-          <option value="John">John</option>
-          <option value="Alice">Alice</option>
-          <option value="Bob">Bob</option>
-        </select>
-        <button onclick="toggleEdit('eggsChicks')" id="eggsChicksBtn">Update</button>
-      </div>
+      <label for="weight">Average Weight (kg):</label>
+      <input type="number" step="0.01" id="weight" required>
+    </div>
+
+    <div class="form-card">
+      <label for="employee">Received by:</label>
+      <select id="employee" required>
+        <option value="">-- Select Employee --</option>
+        <option value="Anna Santos">Anna Santos</option>
+        <option value="Mark Reyes">Mark Reyes</option>
+        <option value="Leo Cruz">Leo Cruz</option>
+      </select>
+
+      <label for="status">Batch Status:</label>
+      <input type="text" id="status" placeholder="e.g., Healthy, Quarantine">
     </div>
   </div>
 
-  <div id="searchContainer">
-    <input type="text" id="searchInput" placeholder="Search by date (e.g. 4/20/2025)" onkeyup="filterTable()">
-    <select id="categoryFilter" onchange="filterTable()">
-      <option value="">All Categories</option>
-      <option value="Population">Population</option>
-      <option value="Feeds">Feeds</option>
-      <option value="Eggs and Chicks">Eggs and Chicks</option>
+  <button class="submit-btn" onclick="submitForm()">Receive Delivery</button>
+
+  <!-- Filter section -->
+  <div class="filter-container">
+    <label for="filterSupplier">Filter by Supplier:</label>
+    <input type="text" id="filterSupplier" oninput="filterTable()">
+
+    <label for="filterEmployee">Filter by Employee:</label>
+    <select id="filterEmployee" onchange="filterTable()">
+      <option value="">-- All --</option>
+      <option value="Anna Santos">Anna Santos</option>
+      <option value="Mark Reyes">Mark Reyes</option>
+      <option value="Leo Cruz">Leo Cruz</option>
     </select>
+
+    <label for="filterDate">Filter by Date:</label>
+    <input type="date" id="filterDate" onchange="filterTable()">
   </div>
 
-  <table>
+  <!-- Table -->
+  <table id="deliveryTable">
     <thead>
       <tr>
-        <th>Category</th>
-        <th>Native</th>
-        <th>Broiler</th>
-        <th>Counted By</th>
+        <th>Supplier</th>
         <th>Date</th>
+        <th>Contact</th>
+        <th>Chickens</th>
+        <th>Age (days)</th>
+        <th>Avg Weight (kg)</th>
+        <th>Received By</th>
+        <th>Status</th>
       </tr>
     </thead>
-    <tbody id="dataTable"></tbody>
+    <tbody id="deliveryBody">
+      <!-- Rows will be added dynamically -->
+    </tbody>
   </table>
 
   <script>
-    const latestEntries = {};
+    // Set current date
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
-    function toggleEdit(section) {
-      let native, broiler, by;
-      
-      if (section === 'eggsChicks') {
-        native = document.getElementById('nativeEggs');
-        broiler = document.getElementById('broilerChicks');
-        by = document.getElementById('eggsChicksBy');
-      } else {
-        native = document.getElementById(section + 'Native') || document.getElementById(section + '1');
-        broiler = document.getElementById(section + 'Broiler') || document.getElementById(section + '2');
-        by = document.getElementById(section + 'By');
+    function submitForm() {
+      const supplier = document.getElementById('supplier').value.trim();
+      const date = document.getElementById('date').value;
+      const contact = document.getElementById('contact').value.trim();
+      const numChickens = parseInt(document.getElementById('numChickens').value);
+      const chickenAge = parseInt(document.getElementById('chickenAge').value);
+      const weight = parseFloat(document.getElementById('weight').value);
+      const employee = document.getElementById('employee').value;
+      const status = document.getElementById('status').value.trim();
+
+      if (!supplier || !contact || !numChickens || !chickenAge || !weight || !employee) {
+        alert("Please complete all required fields.");
+        return;
       }
 
-      const btn = document.getElementById(section + 'Btn');
-
-      if (btn.innerText === 'Update') {
-        native.disabled = false;
-        broiler.disabled = false;
-        by.disabled = false;
-        btn.innerText = 'Save';
-      } else {
-        const nativeVal = native.value;
-        const broilerVal = broiler.value;
-        const byVal = by.value;
-        const date = new Date().toLocaleDateString();
-
-        if (!nativeVal || !broilerVal || !byVal || !isValidInput(nativeVal) || !isValidInput(broilerVal)) {
-          alert('Please enter valid integers greater than 0 for all fields.');
-          return;
-        }
-
-        // Add the new entry to the table
-        const table = document.getElementById('dataTable');
-        const newRow = table.insertRow();
-        newRow.insertCell(0).innerText = section.charAt(0).toUpperCase() + section.slice(1);
-        newRow.insertCell(1).innerText = nativeVal;
-        newRow.insertCell(2).innerText = broilerVal;
-        newRow.insertCell(3).innerText = byVal;
-        newRow.insertCell(4).innerText = date;
-
-        // Update the latestEntries object
-        if (!latestEntries[section] || new Date(latestEntries[section].date) < new Date(date)) {
-          latestEntries[section] = { native: nativeVal, broiler: broilerVal, date };
-          updateDisplayBoard();  // Ensure the display board is updated
-        }
-
-        // Reset input fields and button
-        native.disabled = true;
-        broiler.disabled = true;
-        by.disabled = true;
-        btn.innerText = 'Update';
-
-        native.value = '';
-        broiler.value = '';
+      if (numChickens <= 0 || chickenAge <= 0) {
+        alert("Chickens and age must be greater than 0.");
+        return;
       }
-    }
 
-    function isValidInput(value) {
-      const num = parseInt(value, 10);
-      return Number.isInteger(num) && num > 0;
+      const table = document.getElementById('deliveryBody');
+      const row = table.insertRow();
+      row.insertCell(0).textContent = supplier;
+      row.insertCell(1).textContent = date;
+      row.insertCell(2).textContent = contact;
+      row.insertCell(3).textContent = numChickens;
+      row.insertCell(4).textContent = chickenAge;
+      row.insertCell(5).textContent = weight.toFixed(2);
+      row.insertCell(6).textContent = employee;
+      row.insertCell(7).textContent = status || "N/A";
+
+      document.querySelectorAll("input, select").forEach(el => {
+        if (el.type !== "date") el.value = "";
+      });
+
+      filterTable(); // Refresh filter after new data
     }
 
     function filterTable() {
-      const dateInput = document.getElementById('searchInput').value.toLowerCase();
-      const categoryInput = document.getElementById('categoryFilter').value.toLowerCase();
-      const table = document.getElementById('dataTable');
-      const rows = table.getElementsByTagName('tr');
+      const supplierFilter = document.getElementById('filterSupplier').value.toLowerCase();
+      const employeeFilter = document.getElementById('filterEmployee').value.toLowerCase();
+      const dateFilter = document.getElementById('filterDate').value;
 
-      for (let i = 0; i < rows.length; i++) {
-        const dateText = rows[i].cells[4].textContent.toLowerCase();
-        const categoryText = rows[i].cells[0].textContent.toLowerCase();
+      const rows = document.querySelectorAll('#deliveryBody tr');
+      rows.forEach(row => {
+        const supplier = row.cells[0].textContent.toLowerCase();
+        const date = row.cells[1].textContent;
+        const employee = row.cells[6].textContent.toLowerCase();
 
-        const matchDate = dateText.includes(dateInput);
-        const matchCategory = !categoryInput || categoryText === categoryInput;
+        const matchesSupplier = supplier.includes(supplierFilter);
+        const matchesEmployee = !employeeFilter || employee === employeeFilter;
+        const matchesDate = !dateFilter || date === dateFilter;
 
-        rows[i].style.display = matchDate && matchCategory ? '' : 'none';
-      }
-    }
-
-    function updateDisplayBoard() {
-      const board = document.getElementById('displayBoardList');
-      board.innerHTML = '';
-      for (const [category, data] of Object.entries(latestEntries)) {
-        const li = document.createElement('li');
-        li.textContent = `${category.charAt(0).toUpperCase() + category.slice(1)}: ${data.native}N / ${data.broiler}B on ${data.date}`;
-        board.appendChild(li);
-      }
+        row.style.display = (matchesSupplier && matchesEmployee && matchesDate) ? '' : 'none';
+      });
     }
   </script>
+
 </body>
 </html>
