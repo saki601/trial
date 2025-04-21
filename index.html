@@ -123,7 +123,7 @@
       <input type="text" id="supplier" required>
 
       <label for="date">Date Received:</label>
-      <input type="date" id="date" readonly>
+      <input type="date" id="date" required>
 
       <label for="contact">Contact Info:</label>
       <input type="tel" id="contact" required>
@@ -136,7 +136,7 @@
       <label for="chickenAge">Chicken Age (in days):</label>
       <input type="number" id="chickenAge" min="1" required>
 
-      <label for="weight">Average Weight (kg):</label>
+      <label for="weight">Average Weight (grams):</label>
       <input type="number" step="0.01" id="weight" required>
     </div>
 
@@ -178,13 +178,14 @@
     <thead>
       <tr>
         <th>Supplier</th>
-        <th>Date</th>
+        <th>Date Received</th>
         <th>Contact</th>
         <th>Chickens</th>
         <th>Age (days)</th>
         <th>Avg Weight (kg)</th>
         <th>Received By</th>
         <th>Status</th>
+        <th>System Entry Date</th>
       </tr>
     </thead>
     <tbody id="deliveryBody">
@@ -193,7 +194,7 @@
   </table>
 
   <script>
-    // Set current date
+    // Set default date to today
     document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
     function submitForm() {
@@ -206,7 +207,7 @@
       const employee = document.getElementById('employee').value;
       const status = document.getElementById('status').value.trim();
 
-      if (!supplier || !contact || !numChickens || !chickenAge || !weight || !employee) {
+      if (!supplier || !date || !contact || !numChickens || !chickenAge || !weight || !employee) {
         alert("Please complete all required fields.");
         return;
       }
@@ -215,6 +216,8 @@
         alert("Chickens and age must be greater than 0.");
         return;
       }
+
+      const systemDate = new Date().toISOString().split('T')[0]; // Today's system entry date
 
       const table = document.getElementById('deliveryBody');
       const row = table.insertRow();
@@ -226,12 +229,17 @@
       row.insertCell(5).textContent = weight.toFixed(2);
       row.insertCell(6).textContent = employee;
       row.insertCell(7).textContent = status || "N/A";
+      row.insertCell(8).textContent = systemDate;
 
+      // Clear form fields
       document.querySelectorAll("input, select").forEach(el => {
         if (el.type !== "date") el.value = "";
       });
 
-      filterTable(); // Refresh filter after new data
+      // Reset date to today
+      document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+      filterTable(); // Refresh table filters
     }
 
     function filterTable() {
