@@ -93,6 +93,8 @@
       margin-top: 2rem;
       background: white;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      max-height: 300px;
+      overflow-y: auto;
     }
 
     th, td {
@@ -105,11 +107,31 @@
       background-color: #f0f0f0;
     }
 
-    @media (max-width: 768px) {
-      .form-container {
-        flex-direction: column;
-        align-items: center;
-      }
+    .collapsible {
+      background-color: #4caf50;
+      color: white;
+      padding: 1rem;
+      width: 100%;
+      border: none;
+      text-align: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      border-radius: 0.6rem;
+      margin-top: 2rem;
+    }
+
+    .collapsible:hover {
+      background-color: #388e3c;
+    }
+
+    .content {
+      padding: 0.5rem 1rem;
+      display: none;
+      overflow: hidden;
+      background-color: #f4f7f9;
+      margin-top: 1rem;
+      border-radius: 0.6rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -150,7 +172,19 @@
       </select>
 
       <label for="status">Batch Status:</label>
-      <input type="text" id="status" placeholder="e.g., Healthy, Quarantine">
+      <select id="status" required>
+        <option value="">-- Select Status --</option>
+        <option value="Healthy">Healthy</option>
+        <option value="Sickly">Sickly</option>
+        <option value="Underweight">Underweight</option>
+      </select>
+
+      <label for="paymentStatus">Payment Status:</label>
+      <select id="paymentStatus" required>
+        <option value="">-- Select Payment Status --</option>
+        <option value="Paid">Paid</option>
+        <option value="Pending">Pending</option>
+      </select>
     </div>
   </div>
 
@@ -171,6 +205,13 @@
 
     <label for="filterDate">Filter by Date:</label>
     <input type="date" id="filterDate" onchange="filterTable()">
+
+    <label for="filterPaymentStatus">Filter by Payment Status:</label>
+    <select id="filterPaymentStatus" onchange="filterTable()">
+      <option value="">-- All --</option>
+      <option value="Paid">Paid</option>
+      <option value="Pending">Pending</option>
+    </select>
   </div>
 
   <!-- Table -->
@@ -185,82 +226,125 @@
         <th>Avg Weight (kg)</th>
         <th>Received By</th>
         <th>Status</th>
+        <th>Payment Status</th>
         <th>System Entry Date</th>
       </tr>
     </thead>
     <tbody id="deliveryBody">
-      <!-- Rows will be added dynamically -->
+      <!-- Dummy Data -->
+      <tr>
+        <td>ABC Farms</td>
+        <td>2024-04-15</td>
+        <td>(123) 456-7890</td>
+        <td>200</td>
+        <td>45</td>
+        <td>1.35</td>
+        <td>Anna Santos</td>
+        <td>Healthy</td>
+        <td>Paid</td>
+        <td>2024-04-15</td>
+      </tr>
+      <tr>
+        <td>XYZ Poultry</td>
+        <td>2024-04-17</td>
+        <td>(987) 654-3210</td>
+        <td>150</td>
+        <td>40</td>
+        <td>1.25</td>
+        <td>Mark Reyes</td>
+        <td>Sickly</td>
+        <td>Pending</td>
+        <td>2024-04-17</td>
+      </tr>
+      <tr>
+        <td>Farms Fresh</td>
+        <td>2024-04-20</td>
+        <td>(555) 123-4567</td>
+        <td>180</td>
+        <td>35</td>
+        <td>1.2</td>
+        <td>Leo Cruz</td>
+        <td>Underweight</td>
+        <td>Paid</td>
+        <td>2024-04-20</td>
+      </tr>
+      <tr>
+        <td>ABC Farms</td>
+        <td>2024-04-12</td>
+        <td>(123) 456-7890</td>
+        <td>250</td>
+        <td>50</td>
+        <td>1.4</td>
+        <td>Leo Cruz</td>
+        <td>Healthy</td>
+        <td>Paid</td>
+        <td>2024-04-12</td>
+      </tr>
     </tbody>
   </table>
 
   <script>
-    // Set default date to today
-    document.getElementById('date').value = new Date().toISOString().split('T')[0];
-
     function submitForm() {
-      const supplier = document.getElementById('supplier').value.trim();
+      const supplier = document.getElementById('supplier').value;
       const date = document.getElementById('date').value;
-      const contact = document.getElementById('contact').value.trim();
-      const numChickens = parseInt(document.getElementById('numChickens').value);
-      const chickenAge = parseInt(document.getElementById('chickenAge').value);
-      const weight = parseFloat(document.getElementById('weight').value);
+      const contact = document.getElementById('contact').value;
+      const numChickens = document.getElementById('numChickens').value;
+      const chickenAge = document.getElementById('chickenAge').value;
+      const weight = document.getElementById('weight').value;
       const employee = document.getElementById('employee').value;
-      const status = document.getElementById('status').value.trim();
+      const status = document.getElementById('status').value;
+      const paymentStatus = document.getElementById('paymentStatus').value;
 
-      if (!supplier || !date || !contact || !numChickens || !chickenAge || !weight || !employee) {
-        alert("Please complete all required fields.");
+      if (!supplier || !date || !contact || !numChickens || !chickenAge || !weight || !employee || !status || !paymentStatus) {
+        alert('Please fill out all fields.');
         return;
       }
-
-      if (numChickens <= 0 || chickenAge <= 0) {
-        alert("Chickens and age must be greater than 0.");
-        return;
-      }
-
-      const systemDate = new Date().toISOString().split('T')[0]; // Today's system entry date
 
       const table = document.getElementById('deliveryBody');
       const row = table.insertRow();
-      row.insertCell(0).textContent = supplier;
-      row.insertCell(1).textContent = date;
-      row.insertCell(2).textContent = contact;
-      row.insertCell(3).textContent = numChickens;
-      row.insertCell(4).textContent = chickenAge;
-      row.insertCell(5).textContent = weight.toFixed(2);
-      row.insertCell(6).textContent = employee;
-      row.insertCell(7).textContent = status || "N/A";
-      row.insertCell(8).textContent = systemDate;
-
-      // Clear form fields
-      document.querySelectorAll("input, select").forEach(el => {
-        if (el.type !== "date") el.value = "";
-      });
-
-      // Reset date to today
-      document.getElementById('date').value = new Date().toISOString().split('T')[0];
-
-      filterTable(); // Refresh table filters
+      row.innerHTML = `
+        <td>${supplier}</td>
+        <td>${date}</td>
+        <td>${contact}</td>
+        <td>${numChickens}</td>
+        <td>${chickenAge}</td>
+        <td>${weight}</td>
+        <td>${employee}</td>
+        <td>${status}</td>
+        <td>${paymentStatus}</td>
+        <td>${new Date().toLocaleDateString()}</td>
+      `;
+      
+      alert('Delivery recorded successfully!');
     }
 
     function filterTable() {
       const supplierFilter = document.getElementById('filterSupplier').value.toLowerCase();
       const employeeFilter = document.getElementById('filterEmployee').value.toLowerCase();
       const dateFilter = document.getElementById('filterDate').value;
+      const paymentStatusFilter = document.getElementById('filterPaymentStatus').value.toLowerCase();
 
       const rows = document.querySelectorAll('#deliveryBody tr');
+
       rows.forEach(row => {
-        const supplier = row.cells[0].textContent.toLowerCase();
-        const date = row.cells[1].textContent;
-        const employee = row.cells[6].textContent.toLowerCase();
+        const supplier = row.cells[0].innerText.toLowerCase();
+        const employee = row.cells[6].innerText.toLowerCase();
+        const date = row.cells[1].innerText;
+        const paymentStatus = row.cells[8].innerText.toLowerCase();
 
-        const matchesSupplier = supplier.includes(supplierFilter);
-        const matchesEmployee = !employeeFilter || employee === employeeFilter;
-        const matchesDate = !dateFilter || date === dateFilter;
-
-        row.style.display = (matchesSupplier && matchesEmployee && matchesDate) ? '' : 'none';
+        if (
+          (supplier.includes(supplierFilter) || supplierFilter === '') &&
+          (employee.includes(employeeFilter) || employeeFilter === '') &&
+          (date.includes(dateFilter) || dateFilter === '') &&
+          (paymentStatus.includes(paymentStatusFilter) || paymentStatusFilter === '')
+        ) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
       });
     }
   </script>
-
 </body>
 </html>
+
